@@ -8,7 +8,8 @@ from token import EQUAL
 import bitarray
 from bitarray.util import ba2int
 import random
-
+import os
+import sys
 from pip import main
 
 Big_PrimeTable = {0: 499, 1: 383, 2: 937, 3: 1069,
@@ -28,9 +29,10 @@ iniKey = a[start:end]
 p = len(iniKey)/N
 for i in range(1, int(N/2)):
     iniKey[i*2*p-p:i*2*p] = bitarray.reverse(iniKey[i*2*p-p:i*2*p])
-#key = iniKey
-for i in range(1, N-1):
-    key = iniKey[i*p-p:i*p] ^ iniKey[i*p:i*p+p]
+key = 0
+for i in range(1, N):
+    key = iniKey[i*p-p:i*p] ^ key
+
     # seq = a[0:-1]
     #
     # print(seq)

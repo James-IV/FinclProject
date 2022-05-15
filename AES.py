@@ -39,54 +39,124 @@ Invert_S_Box = (
 )
 
 
+def Text2Matrix(text):  # 4x4 matrix
+    matrix = []
+    for idx in range(0, 16):
+        byte = (text >> ((8*(15-idx)) & 0xFF))
+        if (idx % 4 == 0):
+            matrix.append([byte])
+        else:
+            matrix[idx/4].append(byte)
+    return matrix
+
+
+def Matrix2Text(matrix):  # 4x4 matrix
+    text = 0
+    for i in range(4):
+        for j in range(4):
+            text |= (matrix[i][j] << (120 - 8 * (4 * i + j)))
+    return text
+
+
+def AddRoundKey(s, round_key):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] ^= round_key[i][j]
+
+
+def SubBytes(self, s):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] = S_Box[s[i][j]]
+
+
+def Invert_SubBytes(self, s):
+    for i in range(4):
+        for j in range(4):
+            s[i][j] = Invert_S_Box[s[i][j]]
+
+
+def ShiftRows(a):
+    a[0][1], a[1][1], a[2][1], a[3][1] = a[1][1], a[2][1], a[3][1], a[0][1]
+    a[0][2], a[1][2], a[2][2], a[3][2] = a[2][2], a[3][2], a[0][2], a[1][2]
+    a[0][3], a[1][3], a[2][3], a[3][3] = a[3][3], a[0][3], a[1][3], a[2][3]
+
+
+def Invert_ShiftRows(a):
+    a[0][1], a[1][1], a[2][1], a[3][1] = a[3][1], a[0][1], a[1][1], a[2][1]
+    a[0][2], a[1][2], a[2][2], a[3][2] = a[2][2], a[3][2], a[0][2], a[1][2]
+    a[0][3], a[1][3], a[2][3], a[3][3] = a[1][3], a[2][3], a[3][3], a[0][3]
+
+# not finish part
+# not finish part
+# not finish part
+
+
+def MixColumns(cols):
+    for i in range(0, 4):
+        pass
+
+
+def Invert_MixColumns(cols):
+    for i in range(0, 4):
+        pass
+# not finish part
+# not finish part
+# not finish part
+
+
 class AES:
+
     def __init__(self, master_key):  # encrypt(k,m)
         self.set_key(master_key)
 
+
+# not finish part
+# not finish part
+# not finish part
+
+
     def set_key(self, master_key):
         pass
+# not finish part
+# not finish part
+# not finish part
 
     def encrypt(self, plaintext):
-        pass
+        text_matrix = Text2Matrix(plaintext)
+
+        AddRoundKey(text_matrix, self.keymatrix)  # round 0
+
+        for i in range(0, 10):  # round 1 ~ 10
+            SubBytes(text_matrix)
+            ShiftRows(text_matrix)
+            MixColumns(text_matrix)
+            AddRoundKey(text_matrix, self.key[i])
+
+        SubBytes(text_matrix)
+        ShiftRows(text_matrix)
+        # no mixcolumns in last round
+        AddRoundKey(text_matrix)
+
+        return Matrix2Text(text_matrix)
 
     def decrypt(self, ciphertext):
-        pass
+
+        text_matrix = Text2Matrix(ciphertext)
+
+        AddRoundKey(text_matrix, self.keymatrix)  # round 0
+        ShiftRows(text_matrix)
+        SubBytes(text_matrix)
+
+        for i in range(9, 0, -1):  # round 1 ~ 10
+            AddRoundKey(text_matrix, self.key[i])
+            Invert_MixColumns(text_matrix)
+            Invert_ShiftRows(text_matrix)
+            Invert_SubBytes(text_matrix)
+
+        # no mixcolumns in last round
+        AddRoundKey(text_matrix)
+
+        return Matrix2Text(text_matrix)
 
 # subbytes->shiftrows->mixcolumns->addroundkey
-
-    def AddRoundKey():
-        pass
-
-    def SubBytes():
-        pass
-
-    def ShiftRows(a):
-        a[0][1], a[1][1], a[2][1], a[3][1] = a[1][1], a[2][1], a[3][1], a[0][1]
-        a[0][2], a[1][2], a[2][2], a[3][2] = a[2][2], a[3][2], a[0][2], a[1][2]
-        a[0][3], a[1][3], a[2][3], a[3][3] = a[3][3], a[0][3], a[1][3], a[2][3]
-
-    def Invert_ShiftRows(a):
-        a[0][1], a[1][1], a[2][1], a[3][1] = a[3][1], a[0][1], a[1][1], a[2][1]
-        a[0][2], a[1][2], a[2][2], a[3][2] = a[2][2], a[3][2], a[0][2], a[1][2]
-        a[0][3], a[1][3], a[2][3], a[3][3] = a[1][3], a[2][3], a[3][3], a[0][3]
-
-    def MixColumns(self, cols):
-
-        pass
-
-    def Text2Matrix(text):  # 4x4 matrix
-        matrix = []
-        for idx in range(0, 16):
-            byte = (text >> ((8*(15-idx)) & 0xFF))
-            if (idx % 4 == 0):
-                matrix.append([byte])
-            else:
-                matrix[idx/4].append(byte)
-        return matrix
-
-    def Matrix2Text(matrix):  # 4x4 matrix
-        text = 0
-        for i in range(4):
-            for j in range(4):
-                text |= (matrix[i][j] << (120 - 8 * (4 * i + j)))
-        return text
