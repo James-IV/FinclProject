@@ -32,7 +32,19 @@ for i in range(1, int(N/2)):
 key = 0
 for i in range(1, N):
     key = iniKey[i*p-p:i*p] ^ key
-
+base_file, ext = os.path.splitext(fh)
+if ext == ".mp3":
+    os.rename(fh, base_file + ".mp3" + N)
+elif ext == ".m4a":
+    os.rename(fh, base_file + ".m4a" + N)
+elif ext == ".mp4":
+    os.rename(fh, base_file + ".mp4" + N)
+elif ext == ".aac":
+    os.rename(fh, base_file + ".aac" + N)
+elif ext == ".wav":
+    os.rename(fh, base_file + ".wav" + N)
+else:
+    os.rename(fh, base_file + N)
     # seq = a[0:-1]
     #
     # print(seq)
